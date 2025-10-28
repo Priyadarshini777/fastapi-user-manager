@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: user-manager
-          image: asia-south1-docker.pkg.dev/test-kumar-makala/fastapi-repo/fastapi-user-manager:latest
+          image: asia-docker.pkg.dev/test-kumar-makala/fastapi-repo/fastapi-user-manager:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 8080

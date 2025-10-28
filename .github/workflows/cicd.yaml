@@ -5,7 +5,6 @@ on:
     branches: [ main ]
 
 env:
-  # 👇 Update GAR_REGION to only top-level region (asia/us/europe)
   IMAGE: asia-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GAR_REPOSITORY }}/fastapi-user-manager
   IMAGE_TAG: ${{ github.sha }}
 
@@ -33,10 +32,22 @@ jobs:
           service_account_key: ${{ secrets.GCP_SA_KEY }}
           export_default_credentials: true
 
-      # ✅ Fixed: Correct Artifact Registry hostname (no leading dash)
+      # ✅ Fixed: Correct Artifact Registry hostname
       - name: Configure Docker for Artifact Registry
         run: |
           gcloud auth configure-docker asia-docker.pkg.dev --quiet
+
+      # 🧩 Safety check for required secrets
+      - name: Validate required secrets
+        run: |
+          if [ -z "${{ secrets.GCP_PROJECT_ID }}" ] || [ -z "${{ secrets.GAR_REPOSITORY }}" ]; then
+            echo "❌ Missing GCP_PROJECT_ID or GAR_REPOSITORY secrets!"
+            exit 1
+          fi
+
+      # 🔍 Debug image name
+      - name: Debug image name
+        run: echo "🚀 IMAGE=$IMAGE:$IMAGE_TAG"
 
       - name: Build Docker image
         run: docker build -t $IMAGE:$IMAGE_TAG .
