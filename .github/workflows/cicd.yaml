@@ -42,7 +42,8 @@ jobs:
 
       - name: Configure Docker for Artifact Registry
         run: |
-          gcloud auth configure-docker ${{ secrets.GAR_REGION }}-docker.pkg.dev --quiet
+          echo "🔑 Configuring Docker authentication..."
+          gcloud auth configure-docker --quiet
 
       - name: Build Docker image
         run: |
