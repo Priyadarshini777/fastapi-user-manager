@@ -26,12 +26,17 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      # ✅ Correct Google authentication step
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
       - name: Setup gcloud
-        uses: google-github-actions/setup-gcloud@v1
+        uses: google-github-actions/setup-gcloud@v2
         with:
           project_id: ${{ secrets.GCP_PROJECT_ID }}
-          service_account_key: ${{ secrets.GCP_SA_KEY }}
-          export_default_credentials: true
+          install_components: 'gke-gcloud-auth-plugin'
 
       - name: Validate required secrets
         run: |
@@ -43,7 +48,7 @@ jobs:
       - name: Configure Docker for Artifact Registry
         run: |
           echo "🔑 Configuring Docker authentication..."
-          gcloud auth configure-docker --quiet
+          gcloud auth configure-docker ${{ secrets.GAR_REGION }}-docker.pkg.dev --quiet
 
       - name: Build Docker image
         run: |
@@ -65,12 +70,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # ✅ Same fix for deploy job too
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
       - name: Setup gcloud
-        uses: google-github-actions/setup-gcloud@v1
+        uses: google-github-actions/setup-gcloud@v2
         with:
           project_id: ${{ secrets.GCP_PROJECT_ID }}
-          service_account_key: ${{ secrets.GCP_SA_KEY }}
-          export_default_credentials: true
+          install_components: 'gke-gcloud-auth-plugin'
 
       - name: Get GKE credentials
         run: |
