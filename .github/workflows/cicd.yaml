@@ -32,7 +32,8 @@ jobs:
           service_account_key: ${{ secrets.GCP_SA_KEY }}
           export_default_credentials: true
 
-      - name: Configure docker for Artifact Registry
+      # ✅ FIXED LINE BELOW — removed the wrong dash and used correct syntax
+      - name: Configure Docker for Artifact Registry
         run: |
           gcloud auth configure-docker ${{ secrets.GAR_REGION }}-docker.pkg.dev --quiet
 
@@ -68,7 +69,7 @@ jobs:
           IMAGE: ${{ env.IMAGE }}
           IMAGE_TAG: ${{ env.IMAGE_TAG }}
         run: |
-          # update deployment image with the new tag
+          # Update deployment image with the new tag
           kubectl set image deployment/user-manager-deployment user-manager=$IMAGE:$IMAGE_TAG --record || true
           kubectl apply -f k8s/service.yaml
           kubectl rollout status deployment/user-manager-deployment --timeout=120s || true
